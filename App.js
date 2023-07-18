@@ -10,7 +10,10 @@ export default function App() {
   }
 
   function addGoalHandler() {
-    setGoals(currentGoals => [...currentGoals, enteredGoalText])
+    setGoals(currentGoals => [...currentGoals, {
+      text: enteredGoalText,
+      key: Math.random().toString()
+    }])
     setEnteredGoalText('')
   }
 
@@ -19,11 +22,12 @@ export default function App() {
       
       {/* Text Input and Button */}
       <View style={styles.inputContainer}>
-        <TextInput 
-        style={styles.textInput} 
-        placeholder="Enter a Goal" 
-        onChangeText={goalInputHandler}
-        />
+        <View style={styles.textInput}>
+          <TextInput
+          placeholder="Enter a Goal"
+          onChangeText={goalInputHandler}
+          />
+        </View>
         <Button onPress={addGoalHandler} title="Add Goal" />
       </View>
 
@@ -31,10 +35,11 @@ export default function App() {
       <View style={styles.goalsContainer}>
 
         {/* Flatlist better than ScrollView */}
+        {/* By adding a key property the list items as they are objects, Flatlist sees the keys and automatically saves it */}
         <FlatList data={goals} renderItem={(itemData) => {
           return (
             <View style={styles.goalItem}>
-              <Text style={styles.goalText}>{itemData.item}</Text>
+              <Text style={styles.goalText}>{itemData.item.text}</Text>
             </View>
           )
         }}/>
@@ -70,6 +75,7 @@ const styles = StyleSheet.create({
       padding: 8,
       marginBottom: 8, 
       marginRight: 8, 
+      borderRadius: 4,
     },
 
     goalsContainer: {
