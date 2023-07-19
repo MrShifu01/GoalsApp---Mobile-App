@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Button, TextInput, ScrollView, FlatList } from 'react-native';
 import { useState } from 'react';
+import GoalItem from './components/GoalItem'
 
 export default function App() {
   const [enteredGoalText, setEnteredGoalText] = useState('')
@@ -36,17 +37,12 @@ export default function App() {
 
         {/* Flatlist better than ScrollView */}
         {/* By adding a key property the list items as they are objects, Flatlist sees the keys and automatically saves it */}
-        <FlatList data={goals} renderItem={(itemData) => {
-          return (
-            <View style={styles.goalItem}>
-              <Text style={styles.goalText}>{itemData.item.text}</Text>
-            </View>
-          )
+        <FlatList 
+        data={goals} 
+        renderItem={(itemData) => {
+          return <GoalItem text={itemData.item.text} />
         }}/>
-
-
       </View>
-
     </View>
   );
 }
@@ -81,20 +77,4 @@ const styles = StyleSheet.create({
     goalsContainer: {
       flex: 4,
     },
-
-    goalItem: {
-      padding: 8,
-      borderRadius: 4,
-      backgroundColor: '#444',
-      color: '#fff',
-      borderColor: '#000000',
-      borderWidth: 1,
-      marginBottom: 8,
-      marginTop: 8,
-    },
-
-    goalText: {
-      color: '#fff',
-    }
-
 });
