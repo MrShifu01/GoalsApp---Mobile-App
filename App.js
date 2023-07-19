@@ -1,79 +1,75 @@
-import { StyleSheet, Text, View, Button, TextInput, ScrollView, FlatList } from 'react-native';
-import { useState } from 'react';
+import { StyleSheet, View, FlatList, Button } from 'react-native';
+import GoalInput from './components/GoalInput';
 import GoalItem from './components/GoalItem'
+import { useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
 
+// ================== App ==================
 export default function App() {
-  const [enteredGoalText, setEnteredGoalText] = useState('')
   const [goals, setGoals] = useState([])
+  const [modalIsVisible, setModalIsVisible] = useState(false)
 
-  function goalInputHandler(enteredText) {
-    setEnteredGoalText(enteredText)
-  }
-
-  function addGoalHandler() {
+  function addGoalHandler(enteredGoalText) {
     setGoals(currentGoals => [...currentGoals, {
       text: enteredGoalText,
-      key: Math.random().toString()
+      id: Math.random().toString()
     }])
-    setEnteredGoalText('')
+    handleEndAddGoal()
+  }
+
+  function handleDeleteGoal(goalId) {
+    setGoals(currentGoals => {
+      return currentGoals.filter((goal) => goal.id !== goalId)
+    })
+  }
+
+  function handleStartAddGoal() {
+    setModalIsVisible(true)
+  }
+
+  function handleEndAddGoal() {
+    setModalIsVisible(false)
   }
 
   return (
-    <View style={styles.appContainer}>
-      
-      {/* Text Input and Button */}
-      <View style={styles.inputContainer}>
-        <View style={styles.textInput}>
-          <TextInput
-          placeholder="Enter a Goal"
-          onChangeText={goalInputHandler}
+    <>
+    {/* Status bar to style the time and battery of the phone */}
+      <StatusBar style='auto'/> 
+      <View style={styles.appContainer}>
+        <Button title="Add New Goal" color="#000" onPress={handleStartAddGoal} />
+        <GoalInput
+          visible={modalIsVisible}
+          toCloseModal={handleEndAddGoal}
+          onAddGoal={addGoalHandler}
+        />
+        <View style={styles.goalsContainer}>
+          <FlatList
+            data={goals}
+            renderItem={(itemData) => {
+              return (
+                <GoalItem
+                  goalId={itemData.item.id}
+                  onDeleteGoal={handleDeleteGoal}
+                  text={itemData.item.text}
+                />
+              );
+            }}
+            keyExtractor={(item, index) => item.id}
           />
         </View>
-        <Button onPress={addGoalHandler} title="Add Goal" />
       </View>
-
-      {/* List of inputted goals */}
-      <View style={styles.goalsContainer}>
-
-        {/* Flatlist better than ScrollView */}
-        {/* By adding a key property the list items as they are objects, Flatlist sees the keys and automatically saves it */}
-        <FlatList 
-        data={goals} 
-        renderItem={(itemData) => {
-          return <GoalItem text={itemData.item.text} />
-        }}/>
-      </View>
-    </View>
+    </>
   );
 }
 
+// ================== StyleSheet ==================
 const styles = StyleSheet.create({
+
     appContainer: {
       flex: 1,
       paddingTop: 50,
       paddingHorizontal: 16,
     },
-
-    inputContainer: {
-      flex: 1,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: '#cccccc',
-    },
-
-    textInput: {
-      width: '70%',
-      borderColor: '#cccccc',
-      borderWidth: 1,
-      padding: 8,
-      marginBottom: 8, 
-      marginRight: 8, 
-      borderRadius: 4,
-    },
-
     goalsContainer: {
       flex: 4,
     },
